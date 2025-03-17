@@ -3,6 +3,12 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ApiAuthController;
 use App\Http\Controllers\ApiQuizzController;
+use Illuminate\Support\Facades\Response;
+use Illuminate\Http\Request;
+
+Route::get('/api/csrf-token', function (Request $request) {
+    return Response::json(['csrf_token' => csrf_token()]);
+});
 
 Route::middleware([\Illuminate\Http\Middleware\HandleCors::class])->post('/api/login', [ApiAuthController::class, 'loginWithFirebase'])->name('quizz.update');
 

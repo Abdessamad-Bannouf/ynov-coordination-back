@@ -8,5 +8,5 @@ return [
 'allowed_headers' => ['*'], // Autorise tous les headers
 'exposed_headers' => [],
 'max_age' => 0,
-'supports_credentials' => false, // Mettre à true si besoin d'authentification avec CORS
+'supports_credentials' => true, // Mettre à true si besoin d'authentification avec CORS
 ];
