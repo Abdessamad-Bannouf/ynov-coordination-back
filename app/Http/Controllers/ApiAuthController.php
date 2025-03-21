@@ -18,19 +18,21 @@ class ApiAuthController extends Controller
 
     public function loginWithFirebase(Request $request)
     {
-        $validated = $request->validate([
-            'idToken' => 'required|string',
-        ]);
+        $token = request()->bearerToken();
+
+        if (!$token) {
+            return response()->json(['error' => 'Token is required'], 401);
+        }
 
         try {
-            $verifiedIdToken = $this->firebaseAuth->verifyIdToken($request->idToken);
+            $verifiedIdToken = $this->firebaseAuth->verifyIdToken($token);
             $firebaseUserId = $verifiedIdToken->claims()->get('sub');
 
             $user = User::firstOrCreate(
                 ['firebase_uid' => $firebaseUserId], // Condition pour trouver un utilisateur existant
                 [
                     'email' => $verifiedIdToken->claims()->get('email'),
-                    'name' => $verifiedIdToken->claims()->get('name') ?? 'Firebase name',
+                    //'name' => $verifiedIdToken->claims()->get('name') ?? 'Firebase name',
                 ]
             );
 
