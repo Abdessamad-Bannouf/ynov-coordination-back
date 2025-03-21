@@ -7,6 +7,6 @@ return [
 'allowed_origins_patterns' => [],
 'allowed_headers' => ['*'], // Autorise tous les headers
 'exposed_headers' => [],
-'max_age' => 0,
+'max_age' => 3600,
 'supports_credentials' => true, // Mettre à true si besoin d'authentification avec CORS
 ];
