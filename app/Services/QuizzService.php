@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\ImportedCategory;
 use App\Models\ImportedQuestion;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
@@ -35,6 +36,13 @@ class QuizzService
         }
 
         return collect($payload['data'] ?? [])->map(function (array $item) {
+            $categoryId = null;
+            if (!empty($item['category'])) {
+                $categoryId = ImportedCategory::firstOrCreate(
+                    ['source' => 'quizapi.io', 'name' => $item['category']]
+                )->id;
+            }
+
             $question = ImportedQuestion::updateOrCreate(
                 ['external_id' => $item['id']],
                 [
@@ -45,7 +53,7 @@ class QuizzService
                     'type' => $item['type'] ?? null,
                     'difficulty' => $item['difficulty'] ?? null,
                     'explanation' => $item['explanation'] ?? null,
-                    'category' => $item['category'] ?? null,
+                    'imported_category_id' => $categoryId,
                     'tags' => $item['tags'] ?? [],
                 ]
             );

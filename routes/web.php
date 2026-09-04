@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ApiAuthController;
 use App\Http\Controllers\ApiQuizzController;
 use App\Http\Controllers\ApiImportedQuestionController;
+use App\Http\Controllers\ApiImportedCategoryController;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Http\Request;
 
@@ -48,6 +49,8 @@ Route::delete('/api/category/{category}', [\App\Http\Controllers\ApiCategoryCont
 Route::get('/api/imported-questions', [ApiImportedQuestionController::class, 'index'])->name('imported-questions.get');
 
 Route::post('/api/imported-questions/import', [ApiImportedQuestionController::class, 'import'])->name('imported-questions.import');
+
+Route::get('/api/imported-categories', [ApiImportedCategoryController::class, 'index'])->name('imported-categories.get');
 
 
 Route::get('/', function () {
