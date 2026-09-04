@@ -16,7 +16,7 @@ class ApiImportedQuestionController extends Controller
 
     public function index()
     {
-        return response()->json(ImportedQuestion::with('answers')->get());
+        return response()->json(ImportedQuestion::with(['answers', 'category'])->get());
     }
 
     public function import()
