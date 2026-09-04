@@ -18,7 +18,7 @@ class ImportedQuestion extends Model
         'type',
         'difficulty',
         'explanation',
-        'category',
+        'imported_category_id',
         'tags',
     ];
 
@@ -29,5 +29,10 @@ class ImportedQuestion extends Model
     public function answers()
     {
         return $this->hasMany(ImportedQuestionAnswer::class);
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(ImportedCategory::class, 'imported_category_id');
     }
 }
