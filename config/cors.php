@@ -3,7 +3,7 @@
 return [
 'paths' => ['api/*'], // Autorise CORS sur les routes API
 'allowed_methods' => ['*'], // Autorise toutes les méthodes (GET, POST, etc.)
-'allowed_origins' => ['*'], // Autorise toutes les origines (modifiable selon besoin)
+'allowed_origins' => explode(',', env('FRONTEND_URLS', 'http://localhost:5173')), // '*' est incompatible avec supports_credentials
 'allowed_origins_patterns' => [],
 'allowed_headers' => ['*'], // Autorise tous les headers
 'exposed_headers' => [],
