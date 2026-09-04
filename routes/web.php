@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ApiAuthController;
 use App\Http\Controllers\ApiQuizzController;
+use App\Http\Controllers\ApiImportedQuestionController;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Http\Request;
 
@@ -38,6 +39,15 @@ Route::post('/api/category', [\App\Http\Controllers\ApiCategoryController::class
 Route::put('/api/category/{category}', [\App\Http\Controllers\ApiCategoryController::class, 'update'])->name('category.update');
 
 Route::delete('/api/category/{category}', [\App\Http\Controllers\ApiCategoryController::class, 'destroy'])->name('category.destroy');
+
+
+# ---------------------------------------------------------------------------------------------------------------------------------
+
+// Imported questions (quizapi.io)
+
+Route::get('/api/imported-questions', [ApiImportedQuestionController::class, 'index'])->name('imported-questions.get');
+
+Route::post('/api/imported-questions/import', [ApiImportedQuestionController::class, 'import'])->name('imported-questions.import');
 
 
 Route::get('/', function () {

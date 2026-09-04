@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\ImportedQuestion;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 
@@ -13,6 +14,54 @@ class QuizzService
             ->get('https://quizapi.io/api/v1/questions');
 
         return $response->json();
+    }
+
+    /**
+     * Fetch questions from quizapi.io and persist them into imported_questions
+     * (keyed on external_id, so re-running this updates existing rows instead
+     * of duplicating them).
+     *
+     * @return \Illuminate\Support\Collection<int, ImportedQuestion>
+     */
+    public function importQuestions()
+    {
+        $response = Http::withToken(env('API_KEY'))
+            ->get('https://quizapi.io/api/v1/questions');
+
+        $payload = $response->json();
+
+        if (!($payload['success'] ?? false)) {
+            throw new \RuntimeException($payload['error'] ?? 'Failed to fetch questions from quizapi.io');
+        }
+
+        return collect($payload['data'] ?? [])->map(function (array $item) {
+            $question = ImportedQuestion::updateOrCreate(
+                ['external_id' => $item['id']],
+                [
+                    'source' => 'quizapi.io',
+                    'quiz_external_id' => $item['quizId'] ?? null,
+                    'quiz_title' => $item['quizTitle'] ?? null,
+                    'text' => $item['text'],
+                    'type' => $item['type'] ?? null,
+                    'difficulty' => $item['difficulty'] ?? null,
+                    'explanation' => $item['explanation'] ?? null,
+                    'category' => $item['category'] ?? null,
+                    'tags' => $item['tags'] ?? [],
+                ]
+            );
+
+            foreach ($item['answers'] ?? [] as $answer) {
+                $question->answers()->updateOrCreate(
+                    ['external_id' => $answer['id']],
+                    [
+                        'text' => $answer['text'],
+                        'is_correct' => $answer['isCorrect'] ?? false,
+                    ]
+                );
+            }
+
+            return $question;
+        });
     }
 
     public function validatedRequest(Request $request)
