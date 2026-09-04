@@ -5,6 +5,7 @@ use App\Http\Controllers\ApiAuthController;
 use App\Http\Controllers\ApiQuizzController;
 use App\Http\Controllers\ApiImportedQuestionController;
 use App\Http\Controllers\ApiImportedCategoryController;
+use App\Http\Controllers\ApiQuizapiCategoryController;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Http\Request;
 
@@ -51,6 +52,8 @@ Route::get('/api/imported-questions', [ApiImportedQuestionController::class, 'in
 Route::post('/api/imported-questions/import', [ApiImportedQuestionController::class, 'import'])->name('imported-questions.import');
 
 Route::get('/api/imported-categories', [ApiImportedCategoryController::class, 'index'])->name('imported-categories.get');
+
+Route::get('/api/quizapi-categories', [ApiQuizapiCategoryController::class, 'index'])->name('quizapi-categories.get');
 
 
 Route::get('/', function () {

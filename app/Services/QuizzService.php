@@ -18,16 +18,43 @@ class QuizzService
     }
 
     /**
+     * List the quiz categories quizapi.io actually supports for the
+     * `category` filter on /questions (its top-level groups, e.g.
+     * "Programming", "DevOps & Cloud" - not the ~145 finer-grained
+     * sub-categories nested under them).
+     *
+     * @return \Illuminate\Support\Collection<int, array{name: string, quizCount: int}>
+     */
+    public function getAvailableCategories()
+    {
+        $response = Http::withToken(env('API_KEY'))
+            ->get('https://quizapi.io/api/v1/categories');
+
+        $payload = $response->json();
+
+        if (!($payload['success'] ?? false)) {
+            throw new \RuntimeException($payload['error'] ?? 'Failed to fetch categories from quizapi.io');
+        }
+
+        return collect($payload['data'] ?? [])->map(fn (array $group) => [
+            'name' => $group['name'],
+            'quizCount' => collect($group['categories'] ?? [])->sum('quizCount'),
+        ]);
+    }
+
+    /**
      * Fetch questions from quizapi.io and persist them into imported_questions
      * (keyed on external_id, so re-running this updates existing rows instead
      * of duplicating them).
      *
      * @return \Illuminate\Support\Collection<int, ImportedQuestion>
      */
-    public function importQuestions()
+    public function importQuestions(?string $category = null)
     {
         $response = Http::withToken(env('API_KEY'))
-            ->get('https://quizapi.io/api/v1/questions');
+            ->get('https://quizapi.io/api/v1/questions', array_filter([
+                'category' => $category,
+            ]));
 
         $payload = $response->json();
 
