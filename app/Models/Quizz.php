@@ -12,6 +12,8 @@ class Quizz extends Model
     //
     use HasFactory;
 
+    protected $table = 'quizzs';
+
     protected $fillable = [
         'question',
         'description',
@@ -37,5 +39,10 @@ class Quizz extends Model
     public function tags()
     {
         return $this->belongsToMany(Tag::class);
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
     }
 }

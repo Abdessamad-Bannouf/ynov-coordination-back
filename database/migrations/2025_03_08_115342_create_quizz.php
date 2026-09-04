@@ -12,17 +12,20 @@ return new class extends Migration
     public function up(): void
     {
         // Table des quizz
-        Schema::create('quizzs', function (Blueprint $table) {
-            $table->id();
-            $table->string('question');
-            $table->text('description')->nullable();
-            $table->string('category');
-            $table->enum('difficulty', ['Easy', 'Medium', 'Hard']);
-            $table->string('correct_answer')->nullable();
-            $table->text('explanation')->nullable();
-            $table->boolean('multiple_correct_answers');
-            $table->timestamps();
-        });
+        if(!Schema::hasTable('quizzs')) {
+            Schema::create('quizzs', function (Blueprint $table) {
+                $table->id();
+                $table->string('question');
+                $table->text('description')->nullable();
+                $table->string('category');
+                $table->enum('difficulty', ['Easy', 'Medium', 'Hard']);
+                $table->string('correct_answer')->nullable();
+                $table->text('explanation')->nullable();
+                $table->boolean('multiple_correct_answers');
+                $table->foreignId('category_id')->nullable()->references('id')->on('categories')->onDelete('cascade')->onUpdate('cascade');
+                $table->timestamps();
+            });
+        }
 
         // Table des réponses possibles
         Schema::create('quizz_answers', function (Blueprint $table) {
@@ -63,6 +66,12 @@ return new class extends Migration
      */
     public function down(): void
     {
+        if (Schema::hasTable('quizzs')) {
+            Schema::table('quizzs', function (Blueprint $table) {
+                $table->dropForeign('quizzs_category_id_foreign');
+            });
+        }
+
         Schema::dropIfExists('quizz_tag');
         Schema::dropIfExists('tags');
         Schema::dropIfExists('quizz_correct_answers');
